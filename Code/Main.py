@@ -21,11 +21,6 @@ from sklearn.decomposition import PCA
 #from collections import defaultdict
 
 
-
-# 忽略特定类型的警告
-warnings.filterwarnings("ignore", category=FutureWarning)
-
-
 # Function to set random seed for reproducibility
 def set_seed(seed):
     print(seed)
@@ -113,47 +108,6 @@ class Coach:
 	    print('Best epoch : ', bestEpoch, ' , AUC : ', aucMax)
 	    return aucMax
 
-
-
-
-
-
-    
-#    def run(self):
-#        self.prepareModel()
-#        log('Model Prepared')
-#
-#        aucMax = 0
-#        bestEpoch = 0
-#
-#        if args.load_model != None:
-#            self.loadModel()
-#            stloc = len(self.metrics['TrainLoss']) * args.tstEpoch - (args.tstEpoch - 1)
-#        else:
-#            stloc = 0
-#            log('Model Initialized')
-#        for ep in range(stloc, args.epoch):
-#
-#            tstFlag = (ep % args.tstEpoch == 0)
-#            reses = self.trainEpoch()
-#            train_loss = reses
-#            log(self.makePrint('Train', ep, reses, tstFlag))
-#            if tstFlag:
-#                reses = self.testEpoch()
-#                if (reses['Acc'] > aucMax):
-#                    aucMax = reses['Acc']
-#                    bestEpoch = ep
-#                test_r = reses
-#                log(self.makePrint('Test', ep, reses, tstFlag))
-#
-#            # wandb.log(logs)
-#        reses = self.testEpoch()
-#        log(self.makePrint('Test', args.epoch, reses, True))
-#        print('Best epoch : ', bestEpoch, ' , AUC : ', aucMax)
-#        # self.save_model('{}'.format(config['iteration']))
-#        return aucMax
-
-    # Function to prepare the model and optimizer
     def prepareModel(self):
         self.model = Model().cuda()
         self.opt = t.optim.Adam(self.model.parameters(), lr=args.lr, weight_decay=0)
@@ -178,52 +132,6 @@ class Coach:
 #	    plt.close()
 #
 
-
-
-
-#    def plot_tSNE(self, features, labels, epoch, plot_save_path):    
-#	    n_samples, n_features = features.shape
-#	    n_components_pca = min(n_samples, n_features, 50)  # 使用PCA降维以提高t-SNE效率
-#	
-#	    if n_components_pca > 1:
-#	        pca = PCA(n_components=n_components_pca)
-#	        pca_result = pca.fit_transform(features)
-#	        tsne = TSNE(n_components=2, perplexity=50, learning_rate=1000, n_iter=3000, early_exaggeration=30, random_state=42)
-#	        transformed_features = tsne.fit_transform(pca_result)
-#	    else:
-#	        tsne = TSNE(n_components=2, perplexity=50, learning_rate=1000, n_iter=3000, early_exaggeration=30, random_state=42)
-#	        transformed_features = tsne.fit_transform(features)
-#	
-#	    # 使用自定义颜色
-#	    colors = ['#418197' if label == 0 else '#544477' for label in labels]  # 调整颜色以提高对比
-#	
-#	    plt.figure(figsize=(10, 6))
-#	    scatter = plt.scatter(transformed_features[:, 0], transformed_features[:, 1], c=colors, alpha=0.6)
-#	    plt.xlabel('t-SNE 1')
-#	    plt.ylabel('t-SNE 2')
-#	    plt.title(f't-SNE Visualization - Epoch {epoch}')
-#	    plt.savefig(os.path.join(plot_save_path, f'tSNE_epoch_{epoch}.png'))
-#	    plt.close()
-
-
-	
-#    def plot_tSNE(self, features, labels, epoch, plot_save_path):	
-#	    tsne = TSNE(n_components=2, init='pca', learning_rate=200, perplexity=30, random_state=42)
-#	    transformed_features = tsne.fit_transform(features)
-#	    
-#	    plt.figure(figsize=(10, 6))
-#	    scatter = plt.scatter(transformed_features[:, 0], transformed_features[:, 1], c=labels, cmap='plasma', alpha=0.6)
-#	    plt.colorbar(scatter)
-#	    plt.xlabel('t-SNE 1')
-#	    plt.ylabel('t-SNE 2')
-#	    plt.title(f't-SNE Visualization - Epoch {epoch}')
-#	    plt.savefig(os.path.join(plot_save_path, f'tSNE_epoch_{epoch}.png'))
-#	    plt.close()
-
-
-
-
-    # Function to train a single epoch
     def trainEpoch(self):
     
         self.model.train()
@@ -255,43 +163,6 @@ class Coach:
         ret['preLoss'] = epPreLoss / steps
         return ret
 
-    # Function to test a single epoch
-
-
-#    def testEpoch(self, epoch):
-#  
-#	    self.model.eval()    		    
-#	    tstLoader = self.handler.tstLoader
-#
-#	    features_list = []
-#	    labels_list = []
-#	
-#	    with torch.no_grad():
-#	        for tem in tstLoader:
-#	            drugs, genes, labels = tem
-#	            drugs = drugs.long().cuda()
-#	            genes = genes.long().cuda()
-#	            labels = labels.long().cuda()
-#	            
-#	            pre = self.model.predict(self.handler.torchBiAdj, drugs, genes)
-#	            features_list.append(pre.cpu().numpy())
-#	            labels_list.append(labels.cpu().numpy())
-#	
-#	    all_features = np.vstack(features_list)
-#	    all_labels = np.concatenate(labels_list)
-#	
-#	    # 调用 plot_tSNE，并传递保存路径
-#	    self.plot_tSNE(all_features, all_labels, epoch, self.plot_save_path)
-#	
-#	    pre = F.log_softmax(pre, dim=1)
-#	    pre = pre.data.max(1, keepdim=True)[1].detach().cpu()
-#	    labels = labels.detach().cpu()
-#	    epAcc = accuracy_score(labels, pre)
-#	    
-#	    ret = {'Acc': epAcc}
-#	    return ret
-
-
     
 
     def testEpoch(self, epoch):
@@ -308,20 +179,17 @@ class Coach:
                 drugs = drugs.long().cuda()
                 genes = genes.long().cuda()
                 labels = labels.long().cuda()
-                
-                # 模型预测
+           
                 pre = self.model.predict(self.handler.torchBiAdj, drugs, genes)
                 features_list.append(pre.cpu().numpy())
                 labels_list.append(labels.cpu().numpy())
-                
-                # 记录预测值
+         
                 predictions_list.append(pre.cpu().numpy())
         
         all_features = np.vstack(features_list)
         all_labels = np.concatenate(labels_list)
         all_predictions = np.vstack(predictions_list)
-        
-        # 绘制散点密度图
+     
         self.plot_scatter(all_labels, all_predictions, epoch)
         
         # 调用 plot_tSNE，并传递保存路径
@@ -339,7 +207,6 @@ class Coach:
 
     def plot_scatter(self, true_values, predicted_values, epoch): 
    
-    	# 检查 true_values 和 predicted_values 的长度是否相同
         true_values = np.array(true_values).flatten()
         predicted_values = np.array(predicted_values).flatten() 
           	
@@ -371,30 +238,6 @@ class Coach:
         plt.close()
         
        
-
-
-
-
-#    def testEpoch(self):    
-#        self.model.eval()
-#        tstLoader = self.handler.tstLoader
-#        i = 0
-#        for tem in tstLoader:
-#            i += 1
-#            drugs, genes, labels = tem
-#            drugs = drugs.long().cuda()
-#            genes = genes.long().cuda()
-#            labels = labels.long().cuda()
-#            pre = self.model.predict(self.handler.torchBiAdj, drugs, genes)
-##            print("pre", pre.shape)
-#
-#            pre = F.log_softmax(pre, dim=1)
-#            pre = pre.data.max(1, keepdim=True)[1].detach().cpu()
-#            labels = labels.detach().cpu()
-#            epAcc = accuracy_score(labels, pre)
-#        ret = dict()
-#        ret['Acc'] = epAcc
-#        return ret
 
     # Function to load a pre-trained model
     def loadModel(self):
