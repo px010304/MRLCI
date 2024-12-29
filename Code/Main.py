@@ -80,8 +80,6 @@ class Coach:
 	    self.prepareModel()
 	    log('Model Prepared')
 	
-	    aucMax = 0
-	    bestEpoch = 0
 	
 	    if args.load_model is not None:
 	        self.loadModel()
@@ -105,32 +103,13 @@ class Coach:
 	
 	    reses = self.testEpoch(args.epoch)  # 添加最后一个周期数
 	    log(self.makePrint('Test', args.epoch, reses, True))
-	    print('Best epoch : ', bestEpoch, ' , AUC : ', aucMax)
+	    
 	    return aucMax
 
     def prepareModel(self):
         self.model = Model().cuda()
         self.opt = t.optim.Adam(self.model.parameters(), lr=args.lr, weight_decay=0)
 
-
-
-
-#就这个就这个就这个
-#    def plot_UMAP(self, features, labels, epoch, plot_save_path):
-#	    reducer = umap.UMAP(n_neighbors=15, min_dist=0.1, n_components=2, metric='euclidean', random_state=42)
-#	    embedding = reducer.fit_transform(features)
-#	
-#	    # 使用自定义颜色
-#	    colors = ['#418197' if label == 0 else '#544477' for label in labels]  # 例如，蓝色和紫色
-#	
-#	    plt.figure(figsize=(10, 6))
-#	    scatter = plt.scatter(embedding[:, 0], embedding[:, 1], c=colors, alpha=0.6)
-#	    plt.xlabel('UMAP 1')
-#	    plt.ylabel('UMAP 2')
-#	    plt.title(f'UMAP Visualization - Epoch {epoch}')
-#	    plt.savefig(os.path.join(plot_save_path, f'UMAP_epoch_{epoch}.png'))
-#	    plt.close()
-#
 
     def trainEpoch(self):
     
@@ -300,15 +279,10 @@ if __name__ == '__main__':
             result = coach.run()
         results.append(result)
 
-        # 更新最好的结果
-        if best_result is None or result > best_result:  # 假设结果越大越好
-            best_result = result
-            best_config = config.copy()  # 确保保存当前配置的副本
-
 #    avg_r = np.mean(np.array(results), axis=0)
 
     
-    avg_r = best_result
+    avg_r = result
     std_r = np.std(results, axis=0)
     print('test results: ')
     print(avg_r)
